@@ -1,10 +1,16 @@
-import stomp, gzip, StringIO, xml
+import stomp
+import gzip
+import StringIO
+import json
+
+
+def get_credentials():
+    with open('creds.json') as f:
+        creds = json.load(f)
+    return creds
 
 
 class MyListener(object):
-        #
-        # def __init__ (self, conn):
-        #       self._conn = conn
 
         def on_error(self, headers, message):
                 print('received an error %s' % message)
@@ -13,20 +19,21 @@ class MyListener(object):
                 fp = gzip.GzipFile(fileobj=StringIO.StringIO(message))
                 text = fp.readlines()
                 fp.close()
-                print text
+                print('%s\n' % text)
 
 
 if __name__ == '__main__':
-    conn = stomp.Connection([('datafeeds.nationalrail.co.uk', 61613)]
-                            )
+    conn = stomp.Connection([('datafeeds.nationalrail.co.uk', 61613)])
 
     conn.set_listener('', MyListener())
     conn.start()
-    conn.connect(username='d3user',
-                 passcode='d3password',
-                 wait=False)
+    conn.connect(username='d3user', passcode='d3password', wait=False)
+    creds = get_credentials()
+    print creds
 
-    conn.subscribe(destination='/queue/D3907cbe2b-2a58-4c75-add3-850d1bdaa60b',
+    conn.subscribe(destination='/queue/{0}'.format(creds['queue_id']),
                    id=1, ack='auto')
+
+    mydata = raw_input('Prompt :')
 
     conn.disconnect()
