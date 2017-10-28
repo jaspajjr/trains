@@ -1,3 +1,5 @@
 *.swp
 *.swp
+*.ipynb
 *.pyc
+creds.json
