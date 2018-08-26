@@ -1,6 +1,6 @@
 import stomp
 import gzip
-import StringIO
+from io import StringIO
 import json
 
 
@@ -29,11 +29,11 @@ if __name__ == '__main__':
     conn.start()
     conn.connect(username='d3user', passcode='d3password', wait=False)
     creds = get_credentials()
-    print creds
+    print(creds)
 
     conn.subscribe(destination='/queue/{0}'.format(creds['queue_id']),
                    id=1, ack='auto')
 
-    mydata = raw_input('Prompt :')
+    # mydata = raw_input('Prompt :')
 
     conn.disconnect()
